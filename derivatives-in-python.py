@@ -198,11 +198,11 @@ def _(np, requests):
     sample_data1_url = "https://raw.githubusercontent.com/disouzam/derivatives-in-python-by-luke-polson/c5558aa4af03e0684a55385e0e5cf422f285d753/sample_data1.txt"
 
     # https://stackoverflow.com/questions/61249884/download-txt-file-from-github/61250203#61250203
-    response = requests.get(sample_data1_url)
-    response.raise_for_status()  # Raise error for bad status codes
+    sample_data1_response = requests.get(sample_data1_url)
+    sample_data1_response.raise_for_status()  # Raise error for bad status codes
 
-    with open('sample_data1.txt', 'wb') as sample_data_file:
-        sample_data_file.write(response.content)
+    with open('sample_data1.txt', 'wb') as sample_data1_file:
+        sample_data1_file.write(sample_data1_response.content)
     x_2, y_2 = np.loadtxt("sample_data1.txt")
     return x_2, y_2
 
@@ -258,7 +258,16 @@ def _(mo):
 
 
 @app.cell
-def _(np):
+def _(np, requests):
+    sample_data2_url = "https://raw.githubusercontent.com/disouzam/derivatives-in-python-by-luke-polson/refs/heads/main/sample_data2.txt"
+
+    # https://stackoverflow.com/questions/61249884/download-txt-file-from-github/61250203#61250203
+    sample_data2_response = requests.get(sample_data2_url)
+    sample_data2_response.raise_for_status()  # Raise error for bad status codes
+
+    with open('sample_data2.txt', 'wb') as sample_data2_file:
+        sample_data2_file.write(sample_data2_response.content)
+
     x_3, y_3 = np.loadtxt("sample_data2.txt")
     dydx_3 = np.gradient(y_3, x_3)
     return dydx_3, x_3, y_3
@@ -301,7 +310,16 @@ def _(mo):
 
 
 @app.cell
-def _(np):
+def _(np, requests):
+    coviddata_url = "https://raw.githubusercontent.com/disouzam/derivatives-in-python-by-luke-polson/refs/heads/main/coviddata.txt"
+
+    # https://stackoverflow.com/questions/61249884/download-txt-file-from-github/61250203#61250203
+    coviddata_response = requests.get(coviddata_url)
+    coviddata_response.raise_for_status()  # Raise error for bad status codes
+
+    with open('coviddata.txt', 'wb') as coviddata_file:
+        coviddata_file.write(coviddata_response.content)
+
     x_4, y_4 = np.loadtxt("coviddata.txt")
     dydx_4 = np.gradient(y_4, x_4)
     return dydx_4, x_4, y_4
