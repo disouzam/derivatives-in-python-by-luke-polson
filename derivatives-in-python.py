@@ -264,5 +264,128 @@ def _(dydx, np, plt, x_2, y_2):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    This way works fine if the data is smooth but not if the data is noisy:
+    """)
+    return
+
+
+@app.cell
+def _(np):
+    x_3, y_3 = np.loadtxt("sample_data2.txt")
+    dydx_3 = np.gradient(y_3, x_3)
+    return dydx_3, x_3, y_3
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Plot the noisey data
+    """)
+    return
+
+
+@app.cell
+def _(dydx_3, plt, x_3, y_3):
+    fig, ax = plt.subplots(1, 2, figsize=(10, 3))
+    ax[0].plot(x_3, y_3, label="$y(x)$")
+    ax[1].plot(x_3, dydx_3, label="$y'(x)$-1st derivative", color="r")
+    [a.legend() for a in ax]
+    plt.show()
+    return (fig,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Noise gets amplified in the derivative! This leads us to technique 2:
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    **2. The Clever Way**
+
+    Smooth data then take derivative. Consider the following new covid cases per day data
+    """)
+    return
+
+
+@app.cell
+def _(np):
+    x_4, y_4 = np.loadtxt("coviddata.txt")
+    dydx_4 = np.gradient(y_4, x_4)
+    return dydx_4, x_4, y_4
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Taking the derivative naively gives a bad result
+    """)
+    return
+
+
+@app.cell
+def _(dydx_4, plt, x_4, y_4):
+    fig_4, ax_4 = plt.subplots(1, 2, figsize=(10, 3))
+    ax_4[0].plot(x_4, y_4, label="$y(x)$")
+    ax_4[1].plot(x_4, dydx_4, label="$y'(x)$-1st derivative", color="r")
+    [a.legend() for a in ax_4]
+    plt.show()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Smooth the data by convolving it with a rectangle
+    """)
+    return
+
+
+@app.cell
+def _(np):
+    filt = np.ones(15) / 15
+    return (filt,)
+
+
+@app.cell
+def _(filt, np, x_4, y_4):
+    y_smooth_4 = np.convolve(y_4, filt, mode="valid")
+    dysdx_4 = np.gradient(y_smooth_4, x_4[7:-7])
+    return dysdx_4, y_smooth_4
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Plot
+    """)
+    return
+
+
+@app.cell
+def _(dydx_4, dysdx_4, fig, plt, x_4, y_4, y_smooth_4):
+    fig_4_smooth, ax_4_smooth = plt.subplots(1, 2, figsize=(10, 3))
+    ax_4_smooth[0].plot(x_4, y_4, label="$y(x)$")
+    ax_4_smooth[0].plot(x_4[7:-7], y_smooth_4, label=r"$y_{{smooth}}(x)$")
+    ax_4_smooth[1].plot(x_4, dydx_4, label="$y'(x)$", color="r")
+    ax_4_smooth[1].plot(x_4[7:-7], dysdx_4, label="$y_{smooth}'(x)$", color="purple")
+    ax_4_smooth[1].set_ylim(-100, 120)
+    ax_4_smooth[1].grid()
+    [a.legend() for a in ax_4_smooth]
+    [a.set_xlabel("Time [Days]") for a in ax_4_smooth]
+    ax_4_smooth[0].set_ylabel("Cases per Day")
+    ax_4_smooth[1].set_ylabel("$\Delta$ (Cases per Day) / $\Delta t$")
+    fig.tight_layout()
+    plt.show()
+    return
+
+
 if __name__ == "__main__":
     app.run()
