@@ -135,12 +135,12 @@ def _(a, b, c, d4fdx4, x):
     return
 
 
-app._unparsable_cell(
-    r"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Can also convert to a numerical function for plotting
-    """,
-    name="_"
-)
+    """)
+    return
 
 
 @app.cell
@@ -177,6 +177,85 @@ def _(plt, x_values, y_values):
     plt.plot(x_values,y_values, "o--")
     plt.ylabel('$d^4 f / dx^4$', fontsize=24)
     plt.xlabel('$x$', fontsize=24)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Numerical Case
+
+    Your given data like such
+    """)
+    return
+
+
+@app.cell
+def _(np):
+    x_2, y_2 = np.loadtxt('sample_data1.txt')
+    return x_2, y_2
+
+
+@app.cell
+def _(plt, x_2, y_2):
+    plt.plot(x_2, y_2, 'o--')
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    There are a few ways to go about this.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    **1: The basic way**
+    """)
+    return
+
+
+@app.cell
+def _(np, x_2, y_2):
+    dydx = np.gradient(y_2,x_2)
+    return (dydx,)
+
+
+@app.cell
+def _(dydx, np, plt, x_2, y_2):
+    plt.plot(x_2,y_2, '^--', label='$y(x)$')
+    plt.plot(x_2,dydx, 'o--', label='$y\'(x)$ - 1st Derivative')
+
+    number_of_points = len(dydx)
+    dydx_zeros = []
+    previous_y_value = dydx[0]
+    current_y_value = previous_y_value
+
+    for idx in range(1, number_of_points):
+        previous_y_value = current_y_value
+        current_y_value = dydx[idx]
+        if np.sign(previous_y_value) != np.sign(current_y_value):
+
+            if np.sign(previous_y_value) < 0:
+            x_root_boundary = np.array([x_2[idx - 1], x_2[idx]])
+            dydx_root_boundary = np.array([dydx[idx - 1], dydx[idx]])
+            else:
+                x_root_boundary = np.array([x_2[idx], x_2[idx - 1]])
+                dydx_root_boundary = np.array([dydx[idx], dydx[idx - 1]])
+
+            y_interpolate = 0
+            x_interpolate = np.interp(y_interpolate, dydx_root_boundary, x_root_boundary)
+            dydx_zeros.append(x_interpolate)
+
+    for zero in dydx_zeros:
+        plt.axvline(x=zero, color='red', linestyle='--', label=f"$y\'(x)=0$ at $x={zero:.2f}$")
+
+    # Adding a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='y=0')
+    plt.legend()
     return
 
 
