@@ -1,0 +1,21 @@
+[project]
+name = "derivatives-in-python-by-luke-polson"
+version = "0.1.0"
+description = "Repository to play with code presented by Luke Polson on his YouTube channel to calculate derivatives in Python"
+authors = [
+    {name = "Dickson Souza",email = "36424026+disouzam@users.noreply.github.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy (>=2.4.2,<3.0.0)",
+    "scipy (>=1.17.0,<2.0.0)",
+    "sympy (>=1.14.0,<2.0.0)",
+    "matplotlib (>=3.10.8,<4.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
