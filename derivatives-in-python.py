@@ -226,37 +226,12 @@ def _(np, x_2, y_2):
 
 
 @app.cell
-def _(dydx, np, plt, x_2, y_2):
+def _(add_vertical_lines_on_local_max_min, dydx, plt, x_2, y_2):
     plt.plot(x_2, y_2, "^--", label="$y(x)$")
     plt.plot(x_2, dydx, "o--", label="$y'(x)$ - 1st Derivative")
 
-    number_of_points = len(dydx)
-    dydx_zeros = []
-    previous_y_value = dydx[0]
-    current_y_value = previous_y_value
-
-    for idx in range(1, number_of_points):
-        previous_y_value = current_y_value
-        current_y_value = dydx[idx]
-        if np.sign(previous_y_value) != np.sign(current_y_value):
-
-            if np.sign(previous_y_value) < 0:
-                x_root_boundary = np.array([x_2[idx - 1], x_2[idx]])
-                dydx_root_boundary = np.array([dydx[idx - 1], dydx[idx]])
-            else:
-                x_root_boundary = np.array([x_2[idx], x_2[idx - 1]])
-                dydx_root_boundary = np.array([dydx[idx], dydx[idx - 1]])
-
-            y_interpolate = 0
-            x_interpolate = np.interp(
-                y_interpolate, dydx_root_boundary, x_root_boundary
-            )
-            dydx_zeros.append(x_interpolate)
-
-    for zero in dydx_zeros:
-        plt.axvline(
-            x=zero, color="red", linestyle="--", label=f"$y'(x)=0$ at $x={zero:.2f}$"
-        )
+    first_figure_axes = plt.gcf().axes
+    add_vertical_lines_on_local_max_min(first_figure_axes[0], x_2, dydx)
 
     # Adding a horizontal line at y=0
     plt.axhline(y=0, color="black", linestyle="-", label="y=0")
@@ -370,7 +345,16 @@ def _(mo):
 
 
 @app.cell
-def _(dydx_4, dysdx_4, fig, plt, x_4, y_4, y_smooth_4):
+def _(
+    add_vertical_lines_on_local_max_min,
+    dydx_4,
+    dysdx_4,
+    fig,
+    plt,
+    x_4,
+    y_4,
+    y_smooth_4,
+):
     fig_4_smooth, ax_4_smooth = plt.subplots(1, 2, figsize=(10, 3))
     ax_4_smooth[0].plot(x_4, y_4, label="$y(x)$")
     ax_4_smooth[0].plot(x_4[7:-7], y_smooth_4, label=r"$y_{{smooth}}(x)$")
@@ -383,8 +367,56 @@ def _(dydx_4, dysdx_4, fig, plt, x_4, y_4, y_smooth_4):
     ax_4_smooth[0].set_ylabel("Cases per Day")
     ax_4_smooth[1].set_ylabel("$\Delta$ (Cases per Day) / $\Delta t$")
     fig.tight_layout()
+
+    add_vertical_lines_on_local_max_min(ax_4_smooth[0], x_4, dysdx_4)
+
     plt.show()
     return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Utilities
+    """)
+    return
+
+
+@app.cell
+def _(np):
+    def add_vertical_lines_on_local_max_min(plt, x_2, dydx):
+        number_of_points = len(dydx)
+        dydx_zeros = []
+        previous_y_value = dydx[0]
+        current_y_value = previous_y_value
+
+        for idx in range(1, number_of_points):
+            previous_y_value = current_y_value
+            current_y_value = dydx[idx]
+            if np.sign(previous_y_value) != np.sign(current_y_value):
+
+                if np.sign(previous_y_value) < 0:
+                    x_root_boundary = np.array([x_2[idx - 1], x_2[idx]])
+                    dydx_root_boundary = np.array([dydx[idx - 1], dydx[idx]])
+                else:
+                    x_root_boundary = np.array([x_2[idx], x_2[idx - 1]])
+                    dydx_root_boundary = np.array([dydx[idx], dydx[idx - 1]])
+
+                y_interpolate = 0
+                x_interpolate = np.interp(
+                    y_interpolate, dydx_root_boundary, x_root_boundary
+                )
+                dydx_zeros.append(x_interpolate)
+
+        for zero in dydx_zeros:
+            plt.axvline(
+                x=zero,
+                color="red",
+                linestyle="--",
+                label=f"$y'(x)=0$ at $x={zero:.2f}$",
+            )
+
+    return (add_vertical_lines_on_local_max_min,)
 
 
 if __name__ == "__main__":
