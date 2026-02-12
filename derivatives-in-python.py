@@ -34,6 +34,7 @@ def _():
     import sympy as smp
     import numpy as np
     import matplotlib.pyplot as plt
+
     """
     import scipy as sp
     from scipy.misc import derivative
@@ -67,26 +68,26 @@ def _(mo):
 
 @app.cell
 def _(smp):
-    x, a, b, c = smp.symbols('x a b c', real=True)
+    x, a, b, c = smp.symbols("x a b c", real=True)
     return a, b, c, x
 
 
 @app.cell
 def _(a, smp, x):
-    x**2+smp.exp(a)
+    x**2 + smp.exp(a)
     return
 
 
 @app.cell
 def _(a, smp, x):
-    expression = x**2+smp.exp(a)
+    expression = x**2 + smp.exp(a)
     type(expression)
     return
 
 
 @app.cell
 def _(a, b, c, smp, x):
-    f = smp.exp(-a*smp.sin(x**2)) * smp.sin(b**x) * smp.log(c*smp.sin(x)**2 /x)
+    f = smp.exp(-a * smp.sin(x**2)) * smp.sin(b**x) * smp.log(c * smp.sin(x) ** 2 / x)
     f
     return (f,)
 
@@ -131,7 +132,7 @@ def _(mo):
 
 @app.cell
 def _(a, b, c, d4fdx4, x):
-    d4fdx4.subs([(x,4),(a,1),(b,2),(c,3)]).evalf()
+    d4fdx4.subs([(x, 4), (a, 1), (b, 2), (c, 3)]).evalf()
     return
 
 
@@ -145,7 +146,7 @@ def _(mo):
 
 @app.cell
 def _(a, b, c, d4fdx4, smp, x):
-    d4fdx4_f = smp.lambdify((x,a,b,c), d4fdx4)
+    d4fdx4_f = smp.lambdify((x, a, b, c), d4fdx4)
     return (d4fdx4_f,)
 
 
@@ -159,7 +160,7 @@ def _(mo):
 
 @app.cell
 def _(d4fdx4_f, np):
-    x_values = np.linspace(1,2,100)
+    x_values = np.linspace(1, 2, 100)
     y_values = d4fdx4_f(x_values, a=1, b=2, c=3)
     return x_values, y_values
 
@@ -174,9 +175,9 @@ def _(mo):
 
 @app.cell
 def _(plt, x_values, y_values):
-    plt.plot(x_values,y_values, "o--")
-    plt.ylabel('$d^4 f / dx^4$', fontsize=24)
-    plt.xlabel('$x$', fontsize=24)
+    plt.plot(x_values, y_values, "o--")
+    plt.ylabel("$d^4 f / dx^4$", fontsize=24)
+    plt.xlabel("$x$", fontsize=24)
     return
 
 
@@ -192,13 +193,13 @@ def _(mo):
 
 @app.cell
 def _(np):
-    x_2, y_2 = np.loadtxt('sample_data1.txt')
+    x_2, y_2 = np.loadtxt("sample_data1.txt")
     return x_2, y_2
 
 
 @app.cell
 def _(plt, x_2, y_2):
-    plt.plot(x_2, y_2, 'o--')
+    plt.plot(x_2, y_2, "o--")
     return
 
 
@@ -220,14 +221,14 @@ def _(mo):
 
 @app.cell
 def _(np, x_2, y_2):
-    dydx = np.gradient(y_2,x_2)
+    dydx = np.gradient(y_2, x_2)
     return (dydx,)
 
 
 @app.cell
 def _(dydx, np, plt, x_2, y_2):
-    plt.plot(x_2,y_2, '^--', label='$y(x)$')
-    plt.plot(x_2,dydx, 'o--', label='$y\'(x)$ - 1st Derivative')
+    plt.plot(x_2, y_2, "^--", label="$y(x)$")
+    plt.plot(x_2, dydx, "o--", label="$y'(x)$ - 1st Derivative")
 
     number_of_points = len(dydx)
     dydx_zeros = []
@@ -240,21 +241,25 @@ def _(dydx, np, plt, x_2, y_2):
         if np.sign(previous_y_value) != np.sign(current_y_value):
 
             if np.sign(previous_y_value) < 0:
-            x_root_boundary = np.array([x_2[idx - 1], x_2[idx]])
-            dydx_root_boundary = np.array([dydx[idx - 1], dydx[idx]])
+                x_root_boundary = np.array([x_2[idx - 1], x_2[idx]])
+                dydx_root_boundary = np.array([dydx[idx - 1], dydx[idx]])
             else:
                 x_root_boundary = np.array([x_2[idx], x_2[idx - 1]])
                 dydx_root_boundary = np.array([dydx[idx], dydx[idx - 1]])
 
             y_interpolate = 0
-            x_interpolate = np.interp(y_interpolate, dydx_root_boundary, x_root_boundary)
+            x_interpolate = np.interp(
+                y_interpolate, dydx_root_boundary, x_root_boundary
+            )
             dydx_zeros.append(x_interpolate)
 
     for zero in dydx_zeros:
-        plt.axvline(x=zero, color='red', linestyle='--', label=f"$y\'(x)=0$ at $x={zero:.2f}$")
+        plt.axvline(
+            x=zero, color="red", linestyle="--", label=f"$y'(x)=0$ at $x={zero:.2f}$"
+        )
 
     # Adding a horizontal line at y=0
-    plt.axhline(y=0, color='black', linestyle='-', label='y=0')
+    plt.axhline(y=0, color="black", linestyle="-", label="y=0")
     plt.legend()
     return
 
