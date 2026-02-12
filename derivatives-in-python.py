@@ -34,12 +34,14 @@ def _():
     import sympy as smp
     import numpy as np
     import matplotlib.pyplot as plt
+    import requests
+    from io import StringIO
 
     """
     import scipy as sp
     from scipy.misc import derivative
     """
-    return np, plt, smp
+    return np, plt, requests, smp
 
 
 @app.cell(hide_code=True)
@@ -192,7 +194,15 @@ def _(mo):
 
 
 @app.cell
-def _(np):
+def _(np, requests):
+    sample_data1_url = "https://raw.githubusercontent.com/disouzam/derivatives-in-python-by-luke-polson/c5558aa4af03e0684a55385e0e5cf422f285d753/sample_data1.txt"
+
+    # https://stackoverflow.com/questions/61249884/download-txt-file-from-github/61250203#61250203
+    response = requests.get(sample_data1_url)
+    response.raise_for_status()  # Raise error for bad status codes
+
+    with open('sample_data1.txt', 'wb') as sample_data_file:
+        sample_data_file.write(response.content)
     x_2, y_2 = np.loadtxt("sample_data1.txt")
     return x_2, y_2
 
